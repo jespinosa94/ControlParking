@@ -1,0 +1,11 @@
+import java.net.*;
+import java.util.Set;
+
+public class ServidorHTTP {
+	/*
+	 * 2 variables estáticas controlan el numero máximo de conexiones que se pueden realizar
+	 * Por defecto el numero maximo de conexiones será 1
+	 */
+	private static int conexionesActuales = 0;
+	private static int maxConexiones = 1;
+}
