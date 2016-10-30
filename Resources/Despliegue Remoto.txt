@@ -1,0 +1,13 @@
+[PC1] Activar el registro remoto en la ruta del servidor
+	unset CLASSPATH
+	rmiregistry -J-Djava.security.policy=registrar.policy
+
+[PC1] Arrancar las sondas
+	java -Djava.security.policy=registrar.policy Registro 1
+	java -Djava.security.policy=registrar.policy Registro 2
+
+[PC2] Ejecutar el controlador
+	export CLASSPATH=$CLASSPATH:/home/jorge/Escritorio/Controller/src/cliente.jar
+	java -Djava.security.policy=registrar.policy ServidorController 9090 127.0.0.1 1099
+[PC3] Ejecutar HttpServer
+	java ServidorConcurrente 8080 127.0.0.1 9090 3
