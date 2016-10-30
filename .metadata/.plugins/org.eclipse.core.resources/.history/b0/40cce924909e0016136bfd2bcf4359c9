@@ -1,0 +1,36 @@
+import java.net.*;
+import java.util.Set;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
+
+public class ServidorHTTP {
+	/*
+	 * 2 variables estáticas controlan el numero máximo de conexiones que se pueden realizar
+	 * Por defecto el numero maximo de conexiones será 1
+	 */
+	private static int conexionesActuales = 0;
+	private static int maxConexiones = 1;
+	
+	public void SetMaxConexiones(int n) {
+		maxConexiones = n;
+	}
+	
+	/*
+	 * El servidor HTTP recibe los parametros [Puerto de escucha] [numero maximo de conexiones simultaneas] [IP del controlador] [Puerto de escucha del controlador]
+	 * 
+	 */
+	public static void main(String[] args) {
+		String puerto = "";
+		
+		try {
+			if(args.length == 4) {
+				puerto = args[0];
+				maxConexiones = Integer.parseInt(args[3]);
+			} else {
+				//Salta error y se tienen que indicar los parametros de llamada al servidor
+			}
+		} catch(Exception e) {
+			System.out.println("Error, no se ha podido crear un hilo en el servidor" + e.toString());
+		}
+	}
+}

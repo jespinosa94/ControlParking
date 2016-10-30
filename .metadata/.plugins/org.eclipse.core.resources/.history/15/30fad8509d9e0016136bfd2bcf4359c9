@@ -1,0 +1,122 @@
+import java.net.Socket;
+import java.io.*;
+
+public class HiloHTTP extends Thread {
+	final String HEAD404 = "HTTP/1.1 404 File not found\r\n" + "Content-Type: text/html\r\n" + "\r\n\r\n";
+	final String HEAD405 = "HTTP/1.1 405 Method Not Allowed\r\n" + "Content-Type: text/html\r\n" + "\r\n\r\n";
+	final String HEAD200 = "HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n" + "\r\n\r\n";
+	final String HEADCONNECTION = "HTTP/1.1 200 Maximas conexiones alcanzadas\r\n" + "Content-Type: text/html\r\n" + "\r\n\r\n";
+	private Socket skCliente;
+	private String IpController;
+	private String PuertoController;
+	
+	public HiloHTTP(Socket p_cliente, String IpController, String PuertoController) {
+		this.skCliente = p_cliente;
+		this.IpController = IpController;
+		this.PuertoController = PuertoController;
+	}
+	
+	public String leeSocket(Socket p_sk, String p_Datos) {
+		try {
+			//Lectura caracter a caracter
+			InputStream aux = p_sk.getInputStream();
+			BufferedReader flujo = new BufferedReader(new InputStreamReader(aux));
+			p_Datos = new String();
+			p_Datos = flujo.readLine();
+		} catch(Exception e) {
+			System.out.println("Error leyendo del socket: " + e.toString());
+		}
+		return p_Datos;
+	}
+
+	public void escribeSocket(Socket p_sk, String p_Datos) {
+		try {
+			OutputStream aux = p_sk.getOutputStream();
+			PrintWriter flujo = new PrintWriter(new OutputStreamWriter(aux));
+			flujo.println(p_Datos);
+			flujo.flush(); //Limpieza del Buffer
+		} catch(Exception e) {
+			System.out.println("Error escribiendo en el socket: " + e.toString());
+		}
+	}
+	
+	public String leerArchivo(String s) throws IOException {
+		String lectura = "";
+		File fichero = new File(System.getProperty("user.dir") + s); //Obtiene la ruta del fichero
+		try {
+			FileReader fr = new FileReader(fichero);
+			BufferedReader br = new BufferedReader(fr);
+			String linea = "";
+			while((linea = br.readLine()) != null) {
+				lectura += linea;
+			}
+			fr.close();
+			br.close();
+		} catch(Exception e) {
+			lectura = "";
+			lectura = HEAD404 + leerArchivo("/404.html");
+			this.escribeSocket(skCliente, lectura);
+			skCliente.close();
+		}
+		return lectura;
+	}
+	
+	/*
+	 * Separa la petición que llega en el formato de petición de entrada del protocolo HTTP
+	 * Filtra que el comando que entra sea GET
+	 */
+	public String procesaCadena(String cadena) throws IOException {
+		String resultado = "";
+		String[] aux = cadena.split(" ");	
+		
+		if(aux[0].equals("GET")) {
+			if(aux[1].contains("controladorSD")) {
+				String encapsulacion = "";
+				
+				try {
+					if(aux[1].contains("index")) {
+						encapsulacion = aux[1];
+					} else {
+						encapsulacion = aux[1].split("\\?")[0].split("\\/")[2];	//Atributo de la sonda 
+						encapsulacion += " " + aux[1].split("\\?")[1].split("=")[1];	//id de la sonda
+					}
+					resultado = ConectaController(encapsulacion);
+				} catch(Exception e) {
+					resultado = HEAD404 + leerArchivo("/atributos.html");
+					System.out.println("Error en los atributos de la URL, no se puede encapsular la información");
+				}
+					
+			} else if(aux[1].equals("/")) {	//Llamada al indice general de MyHTTPServer
+				resultado = HEAD200 + leerArchivo("/index.html");
+			} else {
+				resultado = HEAD200 + leerArchivo(aux[1]);
+			}
+		} else {
+			resultado = HEAD405 + leerArchivo("405.html");
+		}
+		return resultado;
+	}
+	
+	/*
+	 * @resultado resultado de la petición (siempre será una página html válida)
+	 */
+	public void run() {
+		String resultado = "", Cadena = ""; 
+		try {
+			if(ServidorHTTP.GetConexionesActuales() > ServidorHTTP.GetMaxConexiones()) {
+				//Escribir en socket html de error
+				resultado = HEADCONNECTION + leerArchivo("/connection.html");
+			} else {
+				Cadena = this.leeSocket(skCliente, Cadena);
+				resultado = this.procesaCadena(Cadena);
+			}
+			this.escribeSocket(skCliente, resultado);
+			Thread.sleep(15000);
+			ServidorHTTP.restaConexionesActuales();
+			System.out.println("Se cierra el hilo de petición de cliente, conexiones ocupadas actualmente: " + ServidorHTTP.GetConexionesActuales());
+			skCliente.close();
+		} catch(Exception e) {
+			System.out.println("Error ejecutando la petición del cliente (Thread): " + e.toString());
+		}
+	}
+}
