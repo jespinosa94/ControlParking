@@ -10,13 +10,13 @@ public class HiloHTTP extends Thread {
 	private Socket skCliente;
 	private String IpController;
 	private String PuertoController;
-	
+
 	public HiloHTTP(Socket p_cliente, String IpController, String PuertoController) {
 		this.skCliente = p_cliente;
 		this.IpController = IpController;
 		this.PuertoController = PuertoController;
 	}
-	
+
 	public String leeSocket(Socket p_sk, String p_Datos) {
 		try {
 			//Lectura caracter a caracter
@@ -40,7 +40,7 @@ public class HiloHTTP extends Thread {
 			System.out.println("Error escribiendo en el socket: " + e.toString());
 		}
 	}
-	
+
 	public String leerArchivo(String s) throws IOException {
 		String lectura = "";
 		File fichero = new File(System.getProperty("user.dir") + "/resources" + s); //Obtiene la ruta del fichero
@@ -63,7 +63,7 @@ public class HiloHTTP extends Thread {
 		}
 		return lectura;
 	}
-	
+
 	private String ConectaController(String peticion) throws IOException {
 		String resultado = "";
 		try {
@@ -79,47 +79,47 @@ public class HiloHTTP extends Thread {
 		}
 		return resultado;
 	}
-	
+
 	/*
 	 * Separa la petición que llega en el formato de petición de entrada del protocolo HTTP
 	 * Filtra que el comando que entra sea GET
 	 */
 	public String procesaCadena(String cadena) throws IOException {
 		String resultado = "";
-		String[] aux = cadena.split(" ");	
-		
+		String[] aux = cadena.split(" ");
+
 		if(aux[0].equals("GET")) {
 			if(aux[1].contains("controladorSD")) {
 				String encapsulacion = "";
-				
+
 				try {
 					if(aux[1].contains("index")) {
 						encapsulacion = aux[1];
 					} else {
-						encapsulacion = aux[1].split("\\?")[0].split("\\/")[2];	//Atributo de la sonda 
+						encapsulacion = aux[1].split("\\?")[0].split("\\/")[2];	//Atributo de la sonda
 						encapsulacion += " " + aux[1].split("\\?")[1].split("=")[1];	//id de la sonda
 					}
 					resultado = HEAD200 + ConectaController(encapsulacion);
 				} catch(Exception e) {
 					resultado = HEAD404 + leerArchivo("/atributos.html");
 					System.out.println("Error en los atributos de la URL, no se puede encapsular la información");
-				}	
+				}
 			} else if(aux[1].equals("/")) {	//Llamada al indice general de MyHTTPServer
-				resultado = HEAD200 + leerArchivo("/index.html");
+				resultado = HEAD200 + leerArchivo("/indice.html");
 			} else {
 				resultado = HEAD200 + leerArchivo(aux[1]);
 			}
 		} else {
-			resultado = HEAD405 + leerArchivo("405.html");
+			resultado = HEAD405 + leerArchivo("/405.html");
 		}
 		return resultado;
 	}
-	
+
 	/*
 	 * @resultado resultado de la petición (siempre será una página html válida)
 	 */
 	public void run() {
-		String resultado = "", Cadena = ""; 
+		String resultado = "", Cadena = "";
 		try {
 			if(ServidorHTTP.GetConexionesActuales() > ServidorHTTP.GetMaxConexiones()) {
 				//Escribir en socket html de error
@@ -136,6 +136,9 @@ public class HiloHTTP extends Thread {
 			skCliente.close();
 		} catch(Exception e) {
 			System.out.println("Error ejecutando la petición del cliente (Thread): " + e.toString());
+			ServidorHTTP.restaConexionesActuales();
+			System.out.println("Se cierra el hilo de petición de cliente, conexiones ocupadas actualmente: " + ServidorHTTP.GetConexionesActuales());
+			skCliente.close();
 		}
 	}
 }

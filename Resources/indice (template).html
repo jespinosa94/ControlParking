@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interfaz 1 sensor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <style>
+  body {
+    background-image:url('Background.jpg');
+  }
+
+  header {
+  	color:#fff;
+  }
+  </style>
+
+
+    <header>
+      <div class="container-fluid">
+        <h1> Control Parking </h1>
+      </div>
+    </header>
+
+  <br> <br>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+          <button class="btn btn-lg btn-block btn-primary"> Indice de sensores </button>
+        </div>
+      </div>
+    </div>
+
+    <br><br>
+
+    <form>
+      <div class="form-group">
+        <label for="InputSensor">Numero de sensor</label>
+        <input type="number" class="form-control" id="InputSensor" placeholder="Id">
+      </div>
+
+      <div class="form-group">
+        <label for="InputAtributo">Atributo a consultar</label>
+        <input type="text" class="form-control" id="InputAtributo" placeholder="Atributo">
+      </div>
+
+      <div class="form-group">
+        <label for="InputLED">Numero de sensor</label>
+        <input type="number" class="form-control" id="InputLED" placeholder="Nuevo valor del LED">
+      </div>
+
+      <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+
+</body>
+</html>

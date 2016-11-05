@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interfaz 1 sensor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <style>
+  body {
+    background-image:url("http://eu.battle.net/static/images/layout/bg-top.jpg");
+  }
+
+  header {
+  	color:#fff;
+  }
+
+  h2 {
+    color:#fff;
+  }
+
+  </style>
+
+
+    <header>
+      <div class="container-fluid">
+        <h1> <strong>Control Parking</strong> </h1>
+      </div>
+    </header>
+
+  <br> <br>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+          <form method="get">
+            <a href="/controladorSD/index" class="btn btn-lg btn-block btn-primary" role="button">Indice de sensores</a>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <br><br>
+
+  <!--  <form action="/controladorSD/" method="get">
+      <div class="form-group">
+        <label for="InputAtributo">Atributo del sensor</label>
+        <input type="text" class="form-control" id="InputAtributo" placeholder="volumen, fechaActual, ultimaFecha, luz, SetLED=xxxx">
+      </div>
+
+      <div class="form-group">
+        <label for="InputSensor">Numero de sensor</label>
+        <input type="number" class="form-control" name="Sensor" id="InputSensor" placeholder="Id">
+      </div>
+
+    <-  <div class="form-group">
+        <label for="InputAtributo">Atributo a consultar</label>
+        <input type="text" class="form-control" id="InputAtributo" placeholder="Atributo">
+      </div>
+
+      <div class="form-group">
+        <label for="InputLED">Numero de sensor</label>
+        <input type="number" class="form-control" id="InputLED" placeholder="Nuevo valor del LED">
+      </div> ->
+
+      <button type="submit" class="btn btn-default">Submit</button>
+  </form> -->
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-9">
+          <h2> <strong>Obtener volumen</strong> <small> http://IP:puerto/controladorSD/volumen?Sensor='X'</small></h2>
+          <h2> <strong>Obtener la fecha actual</strong> <small> http://IP:puerto/controladorSD/fechaActual?Sensor='X'</small></h2>
+          <h2> <strong>Obtener la ultima fecha registrada en el sensor</strong> <small> http://IP:puerto/controladorSD/ultimaFecha?Sensor='X'</small></h2>
+          <h2> <strong>Obtener el color del LED</strong> <small> http://IP:puerto/controladorSD/luz?Sensor='X'</small></h2>
+          <h2> <strong>Establecer el color del LED</strong> <small> http://IP:puerto/controladorSD/setLuz='xxxx'?Sensor='X'</small></h2>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

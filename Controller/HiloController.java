@@ -109,6 +109,8 @@ public class HiloController extends Thread {
 
 	public String procesaPeticionRMI(InterfazSensor sensor, String servidor) throws IOException {
 		String respuesta = "";
+		//d
+		System.out.println("[" atributoSensor "]");
 		try {
 			if(atributoSensor.contains("volumen")) {
 				String cuerpo = "";
@@ -139,7 +141,7 @@ public class HiloController extends Thread {
 				cuerpo+="<div class=\"color1 col-md-9\"> <h2> Ultima fecha registrada = " + sensor.GetFechaUltimoCambio() + "</h2> </div> </div> </div> </body> </html>";
 				respuesta = cuerpo;
 			}
-			else if(atributoSensor.contains("LED")) {
+			else if(atributoSensor.contains("luz")) {
 				String cuerpo ="";
 
 				System.out.println("Controller pide el valor actual del led del sensor " + idSensor);
@@ -148,7 +150,7 @@ public class HiloController extends Thread {
 				cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED = " + sensor.GetLED() + "</h2> </div> </div> </div> </body> </html>";
 				respuesta = cuerpo;
 			}
-			else if(atributoSensor.contains("set")) {
+			else if(atributoSensor.equals("setLuz")) {
 				String cuerpo ="";
 				String valor =  atributoSensor.split("=")[1];
 
