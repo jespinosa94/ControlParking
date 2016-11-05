@@ -110,9 +110,9 @@ public class HiloController extends Thread {
 	public String procesaPeticionRMI(InterfazSensor sensor, String servidor) throws IOException {
 		String respuesta = "";
 		//d
-		System.out.println("[" atributoSensor "]");
+		//System.out.println("[" + atributoSensor + "]");
 		try {
-			if(atributoSensor.contains("volumen")) {
+			if(atributoSensor.equals("volumen")) {
 				String cuerpo = "";
 				//d
 				//	System.out.println("[" + sensor.GetVolumen() + "]");
@@ -123,7 +123,7 @@ public class HiloController extends Thread {
 				cuerpo+="<div class=\"color1 col-md-9\"> <h2> Volumen = " + sensor.GetVolumen() + "</h2> </div> </div> </div> </body> </html>";
 				respuesta = cuerpo;
 			}
-			else if(atributoSensor.contains("fechaActual")) {
+			else if(atributoSensor.equals("fechaActual")) {
 				String cuerpo ="";
 
 				System.out.println("Controller pide la fecha actual del sensor " + idSensor);
@@ -132,7 +132,7 @@ public class HiloController extends Thread {
 				cuerpo+="<div class=\"color1 col-md-9\"> <h2> Fecha actual = " + sensor.GetFechaActual() + "</h2> </div> </div> </div> </body> </html>";
 				respuesta = cuerpo;
 			}
-			else if(atributoSensor.contains("ultimaFecha")) {
+			else if(atributoSensor.equals("ultimaFecha")) {
 				String cuerpo ="";
 
 				System.out.println("Controller pide la ultima fecha registrada del sensor " + idSensor);
@@ -141,7 +141,7 @@ public class HiloController extends Thread {
 				cuerpo+="<div class=\"color1 col-md-9\"> <h2> Ultima fecha registrada = " + sensor.GetFechaUltimoCambio() + "</h2> </div> </div> </div> </body> </html>";
 				respuesta = cuerpo;
 			}
-			else if(atributoSensor.contains("luz")) {
+			else if(atributoSensor.equals("luz")) {
 				String cuerpo ="";
 
 				System.out.println("Controller pide el valor actual del led del sensor " + idSensor);
@@ -150,17 +150,22 @@ public class HiloController extends Thread {
 				cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED = " + sensor.GetLED() + "</h2> </div> </div> </div> </body> </html>";
 				respuesta = cuerpo;
 			}
-			else if(atributoSensor.equals("setLuz")) {
+			else if(atributoSensor.split("=")[0].equals("setLuz")) {
 				String cuerpo ="";
 				String valor =  atributoSensor.split("=")[1];
-
-				System.out.println("Controller pide modificar el valor actual del led del sensor " + idSensor + " a " + valor);
-				cuerpo = leerArchivo("/index.html");
-				String nombreFichero = "/sensor" + idSensor + ".txt";
-				sensor.SetLED(valor, nombreFichero);
-				cuerpo+="<h1> Sensor " + idSensor + "</h1> </div>";
-				cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED cambiado a = " + sensor.GetLED() + "</h2> </div> </div> </div> </body> </html>";
-				respuesta = cuerpo;
+				try {
+					int aux = Integer.parseInt(valor);
+					System.out.println("Controller pide modificar el valor actual del led del sensor " + idSensor + " a " + valor);
+					cuerpo = leerArchivo("/index.html");
+					String nombreFichero = "/sensor" + idSensor + ".txt";
+					sensor.SetLED(valor, nombreFichero);
+					cuerpo+="<h1> Sensor " + idSensor + "</h1> </div>";
+					cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED cambiado a = " + sensor.GetLED() + "</h2> </div> </div> </div> </body> </html>";
+					respuesta = cuerpo;
+				} catch(Exception e) {
+					respuesta = "";
+					respuesta = leerArchivo("/errorVariable.html");
+				}
 			}
 			else {
 				respuesta = leerArchivo("/errorVariable.html");
@@ -197,7 +202,7 @@ public class HiloController extends Thread {
 				System.setSecurityManager(new RMISecurityManager());
 				try {
 					//d
-					System.out.println("[" + "/ObjetoSensor" + idSensor + "]");
+					//System.out.println("[" + "/ObjetoSensor" + idSensor + "]");
 					sensor = (InterfazSensor) registro.lookup("/ObjetoSensor" + idSensor);
 				} catch(Exception e) {
 					escribeSocket(skCliente, leerArchivo("/errorSensor.html"));

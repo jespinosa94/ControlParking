@@ -105,7 +105,7 @@ public class HiloHTTP extends Thread {
 					System.out.println("Error en los atributos de la URL, no se puede encapsular la información");
 				}
 			} else if(aux[1].equals("/")) {	//Llamada al indice general de MyHTTPServer
-				resultado = HEAD200 + leerArchivo("/indicito.html");
+				resultado = HEAD200 + leerArchivo("/indice.html");
 			} else {
 				resultado = HEAD200 + leerArchivo(aux[1]);
 			}
@@ -126,20 +126,6 @@ public class HiloHTTP extends Thread {
 				resultado = HEADCONNECTION + leerArchivo("/connection.html");
 			} else {
 				Cadena = this.leeSocket(skCliente, Cadena);
-				/*
-				 * Se modifica la cadena si viene del HTML para que sea compatible con la funcion @procesaCadena()
-				 */
-				//d
-				System.out.println("[" + Cadena + "]");
-				if(Cadena.contains("Atributo=")) {	//http://127.0.0.1:8080/controladorSD/?Atributo=volumen&Sensor=1
-					Cadena = Cadena.replaceAll("\\?Atributo=", "");
-					Cadena = Cadena.replaceAll("\\&", "\\?");
-				} else if(Cadena.contains("?setLuz")) {	//http://127.0.0.1:8080/controladorSD/?setLuz=42&Sensor=1
-					Cadena = Cadena.replaceAll("\\&", "?");
-					Cadena = Cadena.replaceAll("\\?setLuz", "setLuz");
-				}
-				//d
-				System.out.println("{" + Cadena + "}");
 				resultado = this.procesaCadena(Cadena);
 			}
 			this.escribeSocket(skCliente, resultado);

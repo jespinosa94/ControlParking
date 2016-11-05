@@ -136,7 +136,7 @@ public class HiloHTTP extends Thread {
 					Cadena = Cadena.replaceAll("\\&", "\\?");
 				} else if(Cadena.contains("?setLuz")) {	//http://127.0.0.1:8080/controladorSD/?setLuz=42&Sensor=1
 					Cadena = Cadena.replaceAll("\\&", "?");
-					Cadena = Cadena.replaceAll("\\?setLuz", "setLuz");
+					Cadena = Cadena.replaceAll("\\&", "");
 				}
 				//d
 				System.out.println("{" + Cadena + "}");
