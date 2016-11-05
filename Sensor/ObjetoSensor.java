@@ -2,14 +2,14 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.IdentityScope;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings({ "serial", "unused" })
 public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor, Serializable {
-	private int volumen;
-	private LocalDate fechaUltimoCambio;
-	private int led;
+	private String volumen;
+	private String fechaUltimoCambio;
+	private String led;
 	private String id;
 	
 	public ObjetoSensor(String id) throws RemoteException {
@@ -22,24 +22,32 @@ public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor,
 		return id;
 	}
 
-	public int GetVolumen() throws RemoteException {
+	public String GetVolumen() throws RemoteException {
 		return volumen;
 	}
-
-	public LocalDate GetFechaActual() throws RemoteException {
-		return LocalDate.now();
+	
+	/*
+	 * (non-Javadoc)
+	 * @see InterfazSensor#GetFechaActual()
+	 * Se crea el formato especificado en la practica y se devuelve como String
+	 */
+	public String GetFechaActual() throws RemoteException {
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/mm/yyyy HH:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
+		String fechaActual = now.format(formato);
+		return fechaActual;
 	}
 
-	public LocalDate GetFechaUltimoCambio() throws RemoteException {
+	public String GetFechaUltimoCambio() throws RemoteException {
 		return fechaUltimoCambio;
 	}
 
-	public int GetLED() throws RemoteException {
+	public String GetLED() throws RemoteException {
 		return led;
 	}
 
-	public void SetLED(int valor, String nombreFichero) throws RemoteException {
-		String valorAnterior = Integer.toString(led);
+	public void SetLED(String valor, String nombreFichero) throws RemoteException {
+		String valorAnterior = led;
 		led = valor;
 		File fichero = new File(System.getProperty("user.dir") + nombreFichero);
 		String lectura = "";	
@@ -51,7 +59,7 @@ public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor,
 	        String linea;
 	        while((linea = br.readLine()) != null) {
 	          if(linea.contains(valorAnterior)) {
-	            linea = linea.replace(valorAnterior, Integer.toString(valor));
+	            linea = linea.replace(valorAnterior, valor);
 	          }
 	          lectura += linea + ",";
 	        }
@@ -82,13 +90,11 @@ public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor,
 				String linea;
 				while((linea = br.readLine()) != null) {
 					if(linea.contains("Volumen")) {
-						volumen = Integer.parseInt(linea.split("=")[1]);
+						volumen = linea.split("=")[1];
 					} else if(linea.contains("UltimaFecha")) {
-						DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-						String fecha = linea.split("=")[1];
-						fechaUltimoCambio = LocalDate.parse(fecha, formato);
+						fechaUltimoCambio = linea.split("=")[1];
 					} else if(linea.contains("Led")) {
-						led = Integer.parseInt(linea.split("=")[1]);
+						led = linea.split("=")[1];
 					}
 					lectura += linea;
 				}

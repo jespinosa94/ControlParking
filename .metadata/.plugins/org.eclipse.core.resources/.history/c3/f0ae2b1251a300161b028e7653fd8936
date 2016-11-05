@@ -1,0 +1,117 @@
+import java.io.*;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.security.IdentityScope;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+@SuppressWarnings({ "serial", "unused" })
+public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor, Serializable {
+	private String volumen;
+	private LocalDate fechaUltimoCambio;
+	private int led;
+	private String id;
+	
+	public ObjetoSensor(String id) throws RemoteException {
+		super();
+		this.id = id;
+		leerSensor("/sensor" + id + ".txt");
+	}
+	
+	public String GetId() throws RemoteException {
+		return id;
+	}
+
+	public String GetVolumen() throws RemoteException {
+		return volumen;
+	}
+
+	public String GetFechaActual() throws RemoteException {
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/mm/yyyy HH:mm:ss");
+		String fechaActual = LocalDate.now().parse(formato);
+		return fechaActual;
+	}
+
+	public LocalDate GetFechaUltimoCambio() throws RemoteException {
+		return fechaUltimoCambio;
+	}
+
+	public int GetLED() throws RemoteException {
+		return led;
+	}
+
+	public void SetLED(int valor, String nombreFichero) throws RemoteException {
+		String valorAnterior = Integer.toString(led);
+		led = valor;
+		File fichero = new File(System.getProperty("user.dir") + nombreFichero);
+		String lectura = "";	
+		
+		try {
+	        FileReader fr = new FileReader(fichero);
+	        BufferedReader br = new BufferedReader(fr);
+
+	        String linea;
+	        while((linea = br.readLine()) != null) {
+	          if(linea.contains(valorAnterior)) {
+	            linea = linea.replace(valorAnterior, Integer.toString(valor));
+	          }
+	          lectura += linea + ",";
+	        }
+	        br.close();
+	        fr.close();
+	        
+	        String[] escritura = lectura.split(",");
+	        FileWriter fw = new FileWriter(fichero, false);
+	        for(String s: escritura) {
+	          fw.write(s);
+	          fw.write("\n");
+	          fw.flush();
+	        }
+
+	        fw.close();
+		} catch(Exception e) {
+			System.out.println("Error haciendo Set de la luz del sensor: " + e.toString());
+		}
+	}
+	
+	public String leerSensor(String s) throws RemoteException {
+		String lectura = "";
+		File fichero = new File(System.getProperty("user.dir") + s);
+		if(fichero.exists()) {
+			try {
+				FileReader fr = new FileReader(fichero);
+				BufferedReader br = new BufferedReader(fr);
+				String linea;
+				while((linea = br.readLine()) != null) {
+					if(linea.contains("Volumen")) {
+						volumen = linea.split("=")[1];
+					} else if(linea.contains("UltimaFecha")) {
+						DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+						String fecha = linea.split("=")[1];
+						fechaUltimoCambio = LocalDate.parse(fecha, formato);
+					} else if(linea.contains("Led")) {
+						led = Integer.parseInt(linea.split("=")[1]);
+					}
+					lectura += linea;
+				}
+				br.close();
+				fr.close();
+			} catch(Exception e) {
+				System.out.println("Error al leer el fichero del sensor: " + e.toString());
+			}
+		} else {
+			try{
+				String nombre = "sensor" + id + ".txt";
+			    PrintWriter writer = new PrintWriter(nombre, "UTF-8");
+			    writer.println("Volumen=30");
+			    writer.println("UltimaFecha=20/09/2016 15:30:26");
+			    writer.println("Led=4500");
+			    writer.close();
+			    leerSensor("/sensor" + id + ".txt");
+			} catch (Exception e) {
+			   System.out.println("Error creando el fichero por defecto del sensor " + id + ": " + e.toString());
+			}
+		}
+		return lectura;
+	}
+}

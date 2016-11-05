@@ -1,8 +1,11 @@
 	(Linux 3 - Sensores: )
 		(compilar InterfazSensor, ObjetoSensor y generar Stubs)
+			export CLASSPATH=$CLASSPATH:/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/
 		(compilar RegistradorSensor)
+			javac RegistradorSensor.java
 
 Linux 2 - Registrador:
+	unset CLASSPATH
 	rmiregistry -J-Djava.security.policy=registrar.policy
 		(poner interfazSensor.class y Stubs en carpeta registrador)
 		(compilar todas las clases de registrador)
