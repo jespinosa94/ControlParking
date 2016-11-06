@@ -81,28 +81,22 @@ public class HiloController extends Thread {
 			cuerpo = leerArchivo("/multi-index.html");
 			int j = 0;
 			for(String i : sensores) {
-				
-				try {
-					if(i.contains("/ObjetoSensor")) {
-						if(j<4) {
-							idcolor = j+1;
-							j++;
-						}
-						//d
-						//System.out.println("Sensor " + ": " + i); //Sensor 0: //127.0.0.1:1099/ObjetoSensor1 (para cada linea)
-						idSensor = i.split("\\/")[1].replaceAll("ObjetoSensor", "");
-						sensor = (InterfazSensor) registro.lookup(i);
-						sensor.GetVolumen();	//Sirve para comprobar que el sensor está activo antes de hacer nada
-						cuerpo += "<div class=\"container-fluid\"> <div class=\"color" + idcolor + " main row\"> <div class=\"col-md-3\">";
-						cuerpo += "<h1> Sensor " + idSensor + "</h1> </div>";
-						cuerpo += "<div class=\"color1 col-md-9\">";
-						cuerpo += "<h3> Volumen: " + sensor.GetVolumen() + "</h3>";
-						cuerpo += "<h3> Fecha actual: " + sensor.GetFechaActual() + "</h3>";
-						cuerpo += "<h3> Ultima fecha: " + sensor.GetFechaUltimoCambio() + "</h3>";
-						cuerpo += "<h3> LED: " + sensor.GetLED() + "</h3> </div></div></div>";
+				if(i.contains("/ObjetoSensor")) {
+					if(j<4) {
+						idcolor = j+1;
+						j++;
 					}
-				} catch(Exception e) {
-					System.out.println("El sensor en la posicion " + i + " del registro está deshabilitado");
+					//d
+					//System.out.println("Sensor " + ": " + i); //Sensor 0: //127.0.0.1:1099/ObjetoSensor1 (para cada linea)
+					idSensor = i.split("\\/")[1].replaceAll("ObjetoSensor", "");
+					sensor = (InterfazSensor) registro.lookup(i);
+					cuerpo += "<div class=\"container-fluid\"> <div class=\"color" + idcolor + " main row\"> <div class=\"col-md-3\">";
+					cuerpo += "<h1> Sensor " + idSensor + "</h1> </div>";
+					cuerpo += "<div class=\"color1 col-md-9\">";
+					cuerpo += "<h3> Volumen: " + sensor.GetVolumen() + "</h3>";
+					cuerpo += "<h3> Fecha actual: " + sensor.GetFechaActual() + "</h3>";
+					cuerpo += "<h3> Ultima fecha: " + sensor.GetFechaUltimoCambio() + "</h3>";
+					cuerpo += "<h3> LED: " + sensor.GetLED() + "</h3> </div></div></div>";
 				}
 			}
 			cuerpo += "</body> </html>";
@@ -118,8 +112,6 @@ public class HiloController extends Thread {
 		//d
 		//System.out.println("[" + atributoSensor + "]");
 		try {
-			//d
-			System.out.println("[" + sensor.GetVolumen() + "]");
 			if(atributoSensor.equals("volumen")) {
 				String cuerpo = "";
 				//d
@@ -163,21 +155,12 @@ public class HiloController extends Thread {
 				String valor =  atributoSensor.split("=")[1];
 				try {
 					int aux = Integer.parseInt(valor);
-					if(aux > 0 && aux < 65535) {
-						System.out.println("Controller pide modificar el valor actual del led del sensor " + idSensor + " a " + valor);
-						cuerpo = leerArchivo("/index.html");
-						sensor.SetLED(valor);
-						cuerpo+="<h1> Sensor " + idSensor + "</h1> </div>";
-						cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED cambiado a = " + sensor.GetLED() + "</h2> </div> </div> </div> </body> </html>";
-						respuesta = cuerpo;
-					} else {
-						System.out.println("Controller pide modificar el valor actual del led del sensor " + idSensor + " a " + valor);
-						cuerpo = leerArchivo("/index.html");
-						cuerpo+="<h1> Sensor " + idSensor + "</h1> </div>";
-						cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED Incorrecto, debe estar entre 0 y 65535" + "</h2> </div> </div> </div> </body> </html>";
-						respuesta = cuerpo;
-					}
-					
+					System.out.println("Controller pide modificar el valor actual del led del sensor " + idSensor + " a " + valor);
+					cuerpo = leerArchivo("/index.html");
+					sensor.SetLED(valor);
+					cuerpo+="<h1> Sensor " + idSensor + "</h1> </div>";
+					cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED cambiado a = " + sensor.GetLED() + "</h2> </div> </div> </div> </body> </html>";
+					respuesta = cuerpo;
 				} catch(Exception e) {
 					respuesta = "";
 					respuesta = leerArchivo("/errorVariable.html");
@@ -188,7 +171,7 @@ public class HiloController extends Thread {
 			}
 		} catch (Exception e) {
 			respuesta = "";
-			respuesta = leerArchivo("/errorSensor.html");
+			respuesta = leerArchivo("/errorVariable.html");
 		}
 		return respuesta;
 	}

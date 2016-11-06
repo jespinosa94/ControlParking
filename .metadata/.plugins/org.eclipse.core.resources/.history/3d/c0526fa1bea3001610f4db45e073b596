@@ -83,6 +83,7 @@ public class HiloController extends Thread {
 			for(String i : sensores) {
 				
 				try {
+					sensor.GetVolumen();
 					if(i.contains("/ObjetoSensor")) {
 						if(j<4) {
 							idcolor = j+1;
@@ -92,7 +93,6 @@ public class HiloController extends Thread {
 						//System.out.println("Sensor " + ": " + i); //Sensor 0: //127.0.0.1:1099/ObjetoSensor1 (para cada linea)
 						idSensor = i.split("\\/")[1].replaceAll("ObjetoSensor", "");
 						sensor = (InterfazSensor) registro.lookup(i);
-						sensor.GetVolumen();	//Sirve para comprobar que el sensor está activo antes de hacer nada
 						cuerpo += "<div class=\"container-fluid\"> <div class=\"color" + idcolor + " main row\"> <div class=\"col-md-3\">";
 						cuerpo += "<h1> Sensor " + idSensor + "</h1> </div>";
 						cuerpo += "<div class=\"color1 col-md-9\">";
@@ -102,7 +102,7 @@ public class HiloController extends Thread {
 						cuerpo += "<h3> LED: " + sensor.GetLED() + "</h3> </div></div></div>";
 					}
 				} catch(Exception e) {
-					System.out.println("El sensor en la posicion " + i + " del registro está deshabilitado");
+					System.out.println("El sensor en la posicion " + i " del registro está deshabilitado");
 				}
 			}
 			cuerpo += "</body> </html>";

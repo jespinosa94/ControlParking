@@ -105,7 +105,7 @@ public class HiloHTTP extends Thread {
 					System.out.println("Error en los atributos de la URL, no se puede encapsular la información");
 				}
 			} else if(aux[1].equals("/")) {	//Llamada al indice general de MyHTTPServer
-				resultado = HEAD200 + leerArchivo("/indice.html");
+				resultado = HEAD200 + leerArchivo("/indicito.html");
 			} else {
 				resultado = HEAD200 + leerArchivo(aux[1]);
 			}

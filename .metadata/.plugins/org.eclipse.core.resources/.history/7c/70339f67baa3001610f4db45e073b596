@@ -27,7 +27,7 @@ public class RegistradorSensor {
                 System.out.println("Error al procesar el nombre del atributo" + e.toString());
                 System.out.println("-----------------------------------------------------");
             }
-			if(atributo.equals("volumen")) {
+			if(atributo.equals("volumen") /*|| atributo.equals("ultimaFecha") || atributo.equals("led")*/) {
 				try {
 					System.out.println("Elige un nuevo valor (0-100)");
 					valor = buf.readLine();
