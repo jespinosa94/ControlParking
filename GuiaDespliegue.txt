@@ -4,16 +4,16 @@
 		(compilar RegistradorSensor)
 			javac RegistradorSensor.java
 
-Linux 2 - Registrador:
+Linux 1 - Registrador:
 	unset CLASSPATH
 	rmiregistry -J-Djava.security.policy=registrar.policy
 		(poner interfazSensor.class y Stubs en carpeta registrador)
 		(compilar todas las clases de registrador)
-	java -Djava.security.policy=registrar.policy -Djava.rmi.server.hostname=192.168.1.138 Registrador
+	java -Djava.security.policy=registrar.policy -Djava.rmi.server.hostname=192.168.1.136 Registrador
 
-Linux 3 - Sensores:
-	java -cp . -Djava.security.policy=registrar.policy -Djava.rmi.server.hostname=192.168.1.139 RegistradorSensor 1 192.168.1.138
-	java -cp . -Djava.security.policy=registrar.policy -Djava.rmi.server.hostname=192.168.1.139 RegistradorSensor 2 192.168.1.138
+Linux 2 - Sensores:
+	java -cp . -Djava.security.policy=registrar.policy -Djava.rmi.server.hostname=192.168.1.137 RegistradorSensor 1 192.168.1.136
+	java -cp . -Djava.security.policy=registrar.policy -Djava.rmi.server.hostname=192.168.1.137 RegistradorSensor 2 192.168.1.136
 
 Linux 2 - Controller:
 		(poner interfazSensor.class y Stubs en carpeta controller)
@@ -22,4 +22,4 @@ Linux 2 - Controller:
 
 Linux 1 - MyHTTPServer:
 		(compilar ServidorHTTP)
-	java ServidorHTTP 8080 192.168.1.138 9090 3
+	java ServidorHTTP 8080 192.168.1.136 9090 3

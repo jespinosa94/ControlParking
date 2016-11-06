@@ -1,3 +1,0 @@
-Volumen=4
-UltimaFecha=31/08/1994 16:02:31
-Led=7547546
