@@ -157,8 +157,7 @@ public class HiloController extends Thread {
 					int aux = Integer.parseInt(valor);
 					System.out.println("Controller pide modificar el valor actual del led del sensor " + idSensor + " a " + valor);
 					cuerpo = leerArchivo("/index.html");
-					String nombreFichero = "/sensor" + idSensor + ".txt";
-					sensor.SetLED(valor, nombreFichero);
+					sensor.SetLED(valor);
 					cuerpo+="<h1> Sensor " + idSensor + "</h1> </div>";
 					cuerpo+="<div class=\"color1 col-md-9\"> <h2> Valor LED cambiado a = " + sensor.GetLED() + "</h2> </div> </div> </div> </body> </html>";
 					respuesta = cuerpo;

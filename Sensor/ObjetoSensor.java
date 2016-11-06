@@ -11,11 +11,13 @@ public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor,
 	private String fechaUltimoCambio;
 	private String led;
 	private String id;
+	private String ficheroAsociado;
 	
 	public ObjetoSensor(String id) throws RemoteException {
 		super();
 		this.id = id;
-		leerSensor("/sensor" + id + ".txt");
+		this.ficheroAsociado = "/sensor" + id + ".txt";
+		leerSensor(ficheroAsociado);
 	}
 	
 	public String GetId() throws RemoteException {
@@ -32,7 +34,7 @@ public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor,
 	 * Se crea el formato especificado en la practica y se devuelve como String
 	 */
 	public String GetFechaActual() throws RemoteException {
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/mm/yyyy HH:mm:ss");
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 		LocalDateTime now = LocalDateTime.now();
 		String fechaActual = now.format(formato);
 		return fechaActual;
@@ -45,10 +47,27 @@ public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor,
 	public String GetLED() throws RemoteException {
 		return led;
 	}
-
-	public void SetLED(String valor, String nombreFichero) throws RemoteException {
+	
+	
+	public void SetFechaUltimoCambio(String nuevoValor) {
+		String valorAnterior = fechaUltimoCambio;
+		fechaUltimoCambio = nuevoValor;
+		escribeFichero(valorAnterior, nuevoValor, ficheroAsociado);
+	}
+	
+	public void SetVolumen(String nuevoValor) {
+		String valorAnterior = volumen;
+		volumen = nuevoValor;
+		escribeFichero(valorAnterior, nuevoValor, ficheroAsociado);
+	}
+	
+	public void SetLED(String valor) throws RemoteException {
 		String valorAnterior = led;
 		led = valor;
+		escribeFichero(valorAnterior, valor, ficheroAsociado);
+	}
+	
+	public void escribeFichero(String valorAnterior, String nuevoValor, String nombreFichero) {
 		File fichero = new File(System.getProperty("user.dir") + nombreFichero);
 		String lectura = "";	
 		
@@ -59,7 +78,7 @@ public class ObjetoSensor extends UnicastRemoteObject implements InterfazSensor,
 	        String linea;
 	        while((linea = br.readLine()) != null) {
 	          if(linea.contains(valorAnterior)) {
-	            linea = linea.replace(valorAnterior, valor);
+	            linea = linea.replace(valorAnterior, nuevoValor);
 	          }
 	          lectura += linea + ",";
 	        }

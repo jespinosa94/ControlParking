@@ -1,0 +1,113 @@
+import java.rmi.RMISecurityManager;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.rmi.*;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class RegistradorSensor {
+	
+	private void menu(ObjetoSensor objetoSensor) {
+		boolean exit = false;
+		String atributo = "";
+		String valor = "";
+		InputStreamReader ent = new InputStreamReader(System.in);
+		BufferedReader buf = new BufferedReader(ent);
+		while(exit == false) {
+			System.out.println("Elige un atributo a modificar: ");
+			try	{
+            	atributo = buf.readLine();
+            } catch(Exception e)
+            {
+                System.out.println("Error al procesar el nombre del atributo" + e.toString());
+                System.out.println("-----------------------------------------------------");
+            }
+			if(atributo.equals("volumen") /*|| atributo.equals("ultimaFecha") || atributo.equals("led")*/) {
+				try {
+					System.out.println("Elige un nuevo valor (0-100)");
+					valor = buf.readLine();
+					int aux = Integer.parseInt(valor);
+					if(aux > 0 && aux < 100) {
+						objetoSensor.SetVolumen(valor);
+						System.out.println("-----------------------------------------------------");
+					} else {
+						System.out.println("Valor incorrecto, debe estar entre 0-100");
+						System.out.println("-----------------------------------------------------");
+					}
+				} catch (Exception e) {
+					System.out.println("Error en el formato del atributo: " + e.toString());
+					System.out.println("-----------------------------------------------------");
+				}
+			} else if(atributo.equals("led")) {
+				try {
+					System.out.println("Elige un nuevo valor (0-65535)");
+					valor = buf.readLine();
+					int aux = Integer.parseInt(valor);
+					if(aux > 0 && aux < 65535) {
+						objetoSensor.SetLED(valor);
+						System.out.println("-----------------------------------------------------");
+					} else {
+						System.out.println("Valor incorrecto, debe estar entre 0-65535");
+						System.out.println("-----------------------------------------------------");
+					}
+				} catch (Exception e) {
+					System.out.println("Error en el formato del atributo: " + e.toString());
+					System.out.println("-----------------------------------------------------");
+				}
+			} else if(atributo.equals("ultimaFecha")) {
+				try {
+					System.out.println("Elige un nuevo valor (dd/mm/yyyyHH:mm:ss)");
+					valor = buf.readLine();
+					//d
+					System.out.println("[" + valor + "]");
+					String aux1 = valor.substring(0, 9);
+					String aux2 = valor.substring(10, 17);
+					valor = aux1 + " " + aux2;
+					DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/mm/yyyy HH:mm:ss");
+					LocalDateTime fecha = LocalDateTime.parse(valor, formato);
+					objetoSensor.SetFechaUltimoCambio(valor);
+					System.out.println("-----------------------------------------------------");
+				} catch (Exception e) {
+					System.out.println("Error en el formato del atributo, debe ser dd/mm/yyyyHH:mm:ss: " + e.toString());
+					System.out.println("-----------------------------------------------------");
+				}
+			} else {
+				System.out.println("Error al procesar el nombre del atributo, valores admitidos [volumen], [ultimaFecha], [led]");
+				System.out.println("-----------------------------------------------------");
+			}
+		}
+	}
+	
+	public static void main(String args[]) throws RemoteException {
+		final String ipRegistrador = args[1];
+		final String idSensor = args[0];
+		final String URLRegistro = "";
+		final Registry registro = LocateRegistry.getRegistry(ipRegistrador, 1099); //Devuelve el objeto remoto Registry del host indicado (rmiregistry lanzado en terminal en este caso)
+		
+		if(args.length == 2) {
+			try {
+				RegistradorSensor r = new RegistradorSensor();
+				System.setSecurityManager(new RMISecurityManager());
+				ObjetoSensor objetoSensor = new ObjetoSensor(idSensor);
+				
+				System.out.println("Sensor" + idSensor + " creado");
+				System.out.println("Registrando " + idSensor + " a través del Registrador");
+				final InterfazRegistrador objetoRegistrador = (InterfazRegistrador) registro.lookup("/ObjetoRegistrador"); //busca en el rmiregistry el objeto registrador y llama al metodo registrar para que este pueda registrar el ObjetoSensor en local
+				objetoRegistrador.registrarSensor(objetoSensor);
+				System.out.println("Sensor" + idSensor + " registrado");
+				r.menu(objetoSensor);
+				
+				
+			} catch (Exception e) {
+				System.out.println("Error registrando el objeto: " + e);
+			}
+		} else {
+			System.out.println("Error de sintaxis: [idSensor] [ipRegistrador]");
+			System.exit(1);
+		}
+	}
+}
